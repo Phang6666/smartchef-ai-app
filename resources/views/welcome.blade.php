@@ -43,20 +43,20 @@
                         <label for="ingredients" class="block text-lg font-semibold mb-2 text-gray-800">Your Ingredients</label>
                         <input type="text" name="ingredients" id="ingredients"
                             class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                            placeholder="e.g., chicken breast, tomatoes, rice, onion" required>
+                            placeholder="e.g., chicken breast, tomatoes, rice, onion" required
+                            value="{{ $previous_ingredients ?? '' }}">
                     </div>
 
                     <div class="mb-6">
                         <label for="cuisine" class="block text-lg font-semibold mb-2 text-gray-800">Cuisine Type (Optional)</label>
-                        <select name="cuisine" id="cuisine"
-                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="any">Any</option>
-                            <option value="Italian">Italian</option>
-                            <option value="Asian">Asian</option>
-                            <option value="Mexican">Mexican</option>
-                            <option value="Mediterranean">Mediterranean</option>
-                            <option value="Healthy">Healthy</option>
-                            <option value="Dessert">Dessert</option>
+                        <select name="cuisine" id="cuisine" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="any" {{ ($previous_cuisine ?? 'any') == 'any' ? 'selected' : '' }}>Any</option>
+                            <option value="Italian" {{ ($previous_cuisine ?? '') == 'Italian' ? 'selected' : '' }}>Italian</option>
+                            <option value="Asian" {{ ($previous_cuisine ?? '') == 'Asian' ? 'selected' : '' }}>Asian</option>
+                            <option value="Mexican" {{ ($previous_cuisine ?? '') == 'Mexican' ? 'selected' : '' }}>Mexican</option>
+                            <option value="Mediterranean" {{ ($previous_cuisine ?? '') == 'Mediterranean' ? 'selected' : '' }}>Mediterranean</option>
+                            <option value="Healthy" {{ ($previous_cuisine ?? '') == 'Healthy' ? 'selected' : '' }}>Healthy</option>
+                            <option value="Dessert" {{ ($previous_cuisine ?? '') == 'Dessert' ? 'selected' : '' }}>Dessert</option>
                         </select>
                     </div>
 
@@ -132,6 +132,41 @@
                             @endforeach
                         </ol>
                     </div>
+                    <div class="mt-8 text-center">
+                        <form action="{{ route('recipe.generate') }}" method="POST" id="regenerate-form" class="inline-block">
+                            @csrf
+                            <input type="hidden" name="ingredients" value="{{ $previous_ingredients ?? '' }}">
+                            <input type="hidden" name="cuisine" value="{{ $previous_cuisine ?? 'any' }}">
+
+                            <button type="submit" id="regenerate-button"
+                                class="bg-green-100 text-green-800 font-semibold py-2 px-5 rounded-lg border border-green-200 hover:bg-green-200 hover:border-green-300 transition-all duration-300 flex items-center justify-center mx-auto disabled:opacity-60 relative overflow-hidden">
+                                
+                                <!-- Spinner -->
+                                <svg id="regenerate-spinner"
+                                    class="hidden animate-spin h-5 w-5 text-green-700 mr-2"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0
+                                        0 5.373 0 12h4zm2 5.291A7.962
+                                        7.962 0 014 12H0c0 3.042
+                                        1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+
+                                <!-- Text + Icon -->
+                                <div id="regenerate-content" class="flex items-center transition-all duration-200">
+                                    <svg id="regenerate-icon" xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M4 4v5h5M20 20v-5h-5M4 20h5v-5M20 4h-5v5" />
+                                    </svg>
+                                    <span id="regenerate-text">Regenerate Recipe</span>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             @endif
 
@@ -165,6 +200,36 @@
             loadingSpinner.classList.remove('hidden');
             buttonText.textContent = 'Generating...';
         });
+
+
+        const regenerateForm = document.getElementById('regenerate-form');
+        const regenerateButton = document.getElementById('regenerate-button');
+        const regenerateSpinner = document.getElementById('regenerate-spinner');
+        const regenerateIcon = document.getElementById('regenerate-icon');
+        const regenerateText = document.getElementById('regenerate-text');
+
+        if (regenerateForm) {
+            regenerateForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                // Disable button immediately
+                regenerateButton.disabled = true;
+
+                // Swap text + icon for spinner
+                regenerateIcon.classList.add('hidden');
+                regenerateText.textContent = 'Regenerating...';
+                regenerateSpinner.classList.remove('hidden');
+
+                // Subtle glowing pulse effect
+                regenerateButton.classList.add('animate-pulse', 'bg-green-200');
+
+                // Small delay so user sees animation before reload
+                setTimeout(() => {
+                    regenerateForm.submit();
+                }, 700);
+            });
+        }
+
     </script>
 </body>
 </html>

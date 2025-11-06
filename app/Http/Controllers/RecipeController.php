@@ -92,7 +92,12 @@ class RecipeController extends Controller
                 return view('welcome', ['error' => $error]);
             }
 
-            return view('welcome', ['recipe' => $recipeData]);
+            return view('welcome', [
+                'recipe' => $recipeData,
+                'previous_ingredients' => $ingredients,
+                'previous_cuisine' => $cuisine
+            ]);
+
         } else {
             $error = "Failed to generate recipe. The API returned an error: " . $response->body();
             return view('welcome', ['error' => $error]);
@@ -139,7 +144,11 @@ class RecipeController extends Controller
         sleep(1);
 
         // 5. Return the view with the mock data
-        return view('welcome', ['recipe' => $mockRecipeData]);
+        return view('welcome', [
+            'recipe' => $mockRecipeData,
+            'previous_ingredients' => $ingredients,
+            'previous_cuisine' => $cuisine
+        ]);
     }
 
 }
