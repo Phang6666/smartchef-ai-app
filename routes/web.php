@@ -13,14 +13,17 @@ use App\Http\Controllers\RecipeController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/info', function () {
+    phpinfo();
+});
+
+
+
 
 // Route to display the main page with the form
 Route::get('/', [RecipeController::class, 'index'])->name('home');
 
 // Route to handle the form submission and generate the recipe
 Route::post('/generate-recipe', [RecipeController::class, 'generate'])->name('recipe.generate');
+//Route::post('/generate-recipe', [RecipeController::class, 'generateMock'])->name('recipe.generate');
 
-// Add this temporary route for debugging
-Route::get('/info', function () {
-    phpinfo();
-});
