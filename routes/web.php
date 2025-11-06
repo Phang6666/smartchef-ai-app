@@ -24,6 +24,6 @@ Route::get('/info', function () {
 Route::get('/', [RecipeController::class, 'index'])->name('home');
 
 // Route to handle the form submission and generate the recipe
-Route::post('/generate-recipe', [RecipeController::class, 'generate'])->name('recipe.generate');
-//Route::post('/generate-recipe', [RecipeController::class, 'generateMock'])->name('recipe.generate');
+//Route::post('/generate-recipe', [RecipeController::class, 'generate'])->name('recipe.generate');
+Route::post('/generate-recipe', [RecipeController::class, 'generateMock'])->name('recipe.generate');
 
