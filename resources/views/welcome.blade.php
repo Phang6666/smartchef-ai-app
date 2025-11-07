@@ -214,6 +214,30 @@
                             @endforeach
                         </div>
 
+                        @if (isset($nutrition) && is_array($nutrition))
+                            <div class="relative mt-8">
+                                <h3 class="text-2xl font-bold text-green-700 mb-4 text-center">Predicted Nutrition (per serving)</h3>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center bg-slate-50 p-4 rounded-2xl border shadow-inner">
+                                    <div class="p-2">
+                                        <span class="text-lg font-bold text-slate-800">{{ round($nutrition['calories']) }}</span>
+                                        <span class="block text-sm font-medium text-slate-600">Calories</span>
+                                    </div>
+                                    <div class="p-2">
+                                        <span class="text-lg font-bold text-slate-800">{{ round($nutrition['protein']) }}g</span>
+                                        <span class="block text-sm font-medium text-slate-600">Protein</span>
+                                    </div>
+                                    <div class="p-2">
+                                        <span class="text-lg font-bold text-slate-800">{{ round($nutrition['fat']) }}g</span>
+                                        <span class="block text-sm font-medium text-slate-600">Fat</span>
+                                    </div>
+                                    <div class="p-2">
+                                        <span class="text-lg font-bold text-slate-800">{{ round($nutrition['carbs']) }}g</span>
+                                        <span class="block text-sm font-medium text-slate-600">Carbs</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="relative mb-10">
                             <h3 class="text-2xl font-bold text-green-700 mb-4 flex items-center gap-2">
                                 <span class="h-5 w-5 bg-green-500 rounded-full"></span> Ingredients

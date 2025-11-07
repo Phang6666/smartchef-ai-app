@@ -132,15 +132,21 @@ class RecipeController extends Controller
                 }
             }
 
-            // Get an image URL using the recipe name as the search query
+            // Get the image URL
             $imageUrl = $this->getImageUrlForRecipe($recipeData['recipeName'], $ingredients);
 
+            // **NEW:** Call our ML service to get nutritional data
+            // We use the ingredients list that the Gemini AI provided in its response
+            $nutritionData = $this->getNutritionData($recipeData['ingredients']);
+
+            // Return the final view with all the data, including nutrition
             return view('welcome', [
                 'recipe' => $recipeData,
                 'imageUrl' => $imageUrl,
+                'nutrition' => $nutritionData, // Pass the new nutrition data to the view
                 'previous_ingredients' => $ingredients,
                 'previous_cuisine' => $cuisine,
-                'previous_diet' => $diet,
+                'previous_diet' => $diet
             ]);
 
         } else {
@@ -185,7 +191,7 @@ class RecipeController extends Controller
             $diet = $dietSelection ?: 'none';
         }
 
-        // 3. Create a fake recipe data array with the exact same structure
+        // 3. Create a fake recipe and nutrition data array with the exact same structure
         $mockRecipeData = [
             "recipeName" => "Mock Spicy Noodles (For Testing)",
             "description" => "A delicious and easy-to-make mock noodle dish perfect for testing the UI. This confirms the form is working. The cuisine style requested was: " . htmlspecialchars(ucfirst($cuisine)),
@@ -208,6 +214,13 @@ class RecipeController extends Controller
             ]
         ];
 
+        $mockNutritionData = [
+            'calories' => 450.75,
+            'protein' => 25.5,
+            'fat' => 15.2,
+            'carbs' => 50.1
+        ];
+
         // 4. Simulate a 1-second delay to test your loading spinner
         sleep(1);
 
@@ -218,6 +231,7 @@ class RecipeController extends Controller
         return view('welcome', [
             'recipe' => $mockRecipeData,
             'imageUrl' => $mockImageUrl,
+            'nutrition' => $mockNutritionData,
             'previous_ingredients' => $ingredients,
             'previous_cuisine' => $cuisine,
             'previous_diet' => $diet,
@@ -406,5 +420,34 @@ class RecipeController extends Controller
 
         // Prompt the user to download the file
         return $pdf->download($filename);
+    }
+
+    /**
+     * Calls the ML microservice to get nutritional predictions for a list of ingredients.
+     *
+     * @param array $ingredients The list of ingredient strings from the Gemini recipe.
+     * @return array|null The nutritional data or null if the call fails.
+     */
+    private function getNutritionData(array $ingredients): ?array
+    {
+        // The URL of our local Python/Flask service
+        $url = 'http://127.0.0.1:5001/predict';
+
+        try {
+            // We don't need the SSL fix here because it's a local, non-HTTPS call
+            $response = Http::post($url, [
+                'ingredients' => $ingredients
+            ]);
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+        } catch (\Exception $e) {
+            // If the Flask service is down or there's a connection error
+            // Log the error in a real app: Log::error('ML service connection failed: ' . $e->getMessage());
+            return null;
+        }
+
+        return null;
     }
 }
