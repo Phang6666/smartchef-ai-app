@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str; // Make sure to import Str
+use Illuminate\Support\Str;
+use PDF;
+use Illuminate\Support\Facades\Validator;
 
 class RecipeController extends Controller
 {
@@ -311,5 +313,35 @@ class RecipeController extends Controller
 
         // Join them into one powerful search query
         return implode(' ', $keywords);
+    }
+
+
+    /**
+     * Generates and downloads a PDF for a given recipe.
+     */
+    public function downloadPdf(Request $request)
+    {
+        // Get the raw JSON string from the input
+        $recipeJson = $request->input('recipe');
+        $imageUrl = $request->input('imageUrl');
+
+        $recipeData = json_decode($recipeJson, true);
+
+        if (empty($recipeData) || !is_array($recipeData)) {
+            // This error will now only happen if something is truly wrong
+            return back()->with('error', 'Could not generate PDF: Invalid recipe data provided.');
+        }
+
+        // Load the PDF view with the (now correctly formatted) data
+        $pdf = PDF::loadView('recipe-pdf', [
+            'recipe' => $recipeData,
+            'imageUrl' => $imageUrl
+        ]);
+
+        // Create a clean filename for the download
+        $filename = Str::slug($recipeData['recipeName'] ?? 'recipe') . '.pdf';
+
+        // Prompt the user to download the file
+        return $pdf->download($filename);
     }
 }
