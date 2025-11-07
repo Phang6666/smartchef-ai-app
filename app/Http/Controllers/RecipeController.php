@@ -27,12 +27,35 @@ class RecipeController extends Controller
         // 1. Validate all user inputs
         $request->validate([
             'ingredients' => 'required|string|min:5',
-            'cuisine' => 'nullable|string',
+            'cuisine_select' => 'nullable|string',
+            'cuisine_other' => 'nullable|string',
+            'diet_select' => 'nullable|string',
+            'diet_other' => 'nullable|string',
         ]);
 
-        // 2. Get the inputs from the request
+        // 2. We get the inputs so we can display them in the mock data
         $ingredients = $request->input('ingredients');
-        $cuisine = $request->input('cuisine', 'any');
+        $cuisineSelection = $request->input('cuisine_select');
+        $cuisineOther = $request->input('cuisine_other');
+
+        // If the user chose "Other" AND typed something, use their text.
+        // Otherwise, use the dropdown selection. Default to 'any'.
+        // --- HYBRID LOGIC FOR CUISINE ---
+        if ($cuisineSelection === 'other' && !empty($cuisineOther)) {
+            $cuisine = $cuisineOther;
+        } else {
+            $cuisine = $cuisineSelection ?: 'any';
+        }
+
+        // --- HYBRID LOGIC FOR DIET ---
+        $dietSelection = $request->input('diet_select');
+        $dietOther = $request->input('diet_other');
+
+        if ($dietSelection === 'other' && !empty($dietOther)) {
+            $diet = $dietOther;
+        } else {
+            $diet = $dietSelection ?: 'none';
+        }
 
         // 3. Build the prompt for the AI
         $prompt = "You are a recipe API. Your job is to return a recipe in a valid JSON format.
@@ -44,6 +67,10 @@ class RecipeController extends Controller
             $prompt .= "\nThe recipe must be in the style of {$cuisine} cuisine.";
         }
 
+        if ($diet !== 'none') {
+            $prompt .= "\nThe recipe must adhere to the following goal or dietary restriction: {$diet}.";
+        }
+
         $prompt .= "\n\nThe JSON object must have the following structure:
         {
         \"recipeName\": \"A creative and short recipe name\",
@@ -51,7 +78,7 @@ class RecipeController extends Controller
         \"cookingTime\": \"A string, e.g., 'Approx. 45 minutes'\",
         \"calories\": \"A string, e.g., '~650 kcal per serving'\",
         \"difficulty\": \"A string, either Easy, Medium, or Hard\",
-        \"cuisine\": \"A string matching the requested cuisine style, e.g., '{$cuisine}'\",
+        \"cuisine\": \"A string describing the cuisine style of the generated recipe\",
         \"servings\": \"A string, e.g., 'Serves 2-3 people'\",
         \"ingredients\": [
             \"A string for ingredient 1, including quantity\",
@@ -94,14 +121,26 @@ class RecipeController extends Controller
                 return view('welcome', ['error' => $error]);
             }
 
-            // **NEW:** Get an image URL using the recipe name as the search query
+            // --- CUISINE NORMALIZATION ---
+            $aiCuisine = $recipeData['cuisine'] ?? '';
+            // If the user requested a custom "other" cuisine...
+            if ($cuisine !== 'any' && !in_array($cuisine, ['Italian', 'Asian', 'Mexican', 'Mediterranean', 'Healthy', 'Dessert'])) {
+                // ...and the AI's response is something long or contains "inspired" or "experimental"...
+                if (strlen($aiCuisine) > 20 || str_contains(strtolower($aiCuisine), 'inspired') || str_contains(strtolower($aiCuisine), 'experimental')) {
+                    // ...then override the AI's verbose response with the user's clean input.
+                    $recipeData['cuisine'] = ucfirst($cuisine);
+                }
+            }
+
+            // Get an image URL using the recipe name as the search query
             $imageUrl = $this->getImageUrlForRecipe($recipeData['recipeName'], $ingredients);
 
             return view('welcome', [
                 'recipe' => $recipeData,
                 'imageUrl' => $imageUrl,
                 'previous_ingredients' => $ingredients,
-                'previous_cuisine' => $cuisine
+                'previous_cuisine' => $cuisine,
+                'previous_diet' => $diet,
             ]);
 
         } else {
@@ -113,15 +152,38 @@ class RecipeController extends Controller
 
     public function generateMock(Request $request)
     {
-        // 1. We still validate the inputs to make sure the form is working
+        // 1. Validate all user inputs
         $request->validate([
             'ingredients' => 'required|string|min:5',
-            'cuisine' => 'nullable|string',
+            'cuisine_select' => 'nullable|string',
+            'cuisine_other' => 'nullable|string',
+            'diet_select' => 'nullable|string',
+            'diet_other' => 'nullable|string',
         ]);
 
         // 2. We get the inputs so we can display them in the mock data
         $ingredients = $request->input('ingredients');
-        $cuisine = $request->input('cuisine', 'any');
+        $cuisineSelection = $request->input('cuisine_select');
+        $cuisineOther = $request->input('cuisine_other');
+
+        // If the user chose "Other" AND typed something, use their text.
+        // Otherwise, use the dropdown selection. Default to 'any'.
+        // --- HYBRID LOGIC FOR CUISINE ---
+        if ($cuisineSelection === 'other' && !empty($cuisineOther)) {
+            $cuisine = $cuisineOther;
+        } else {
+            $cuisine = $cuisineSelection ?: 'any';
+        }
+
+        // --- HYBRID LOGIC FOR DIET ---
+        $dietSelection = $request->input('diet_select');
+        $dietOther = $request->input('diet_other');
+
+        if ($dietSelection === 'other' && !empty($dietOther)) {
+            $diet = $dietOther;
+        } else {
+            $diet = $dietSelection ?: 'none';
+        }
 
         // 3. Create a fake recipe data array with the exact same structure
         $mockRecipeData = [
@@ -157,7 +219,8 @@ class RecipeController extends Controller
             'recipe' => $mockRecipeData,
             'imageUrl' => $mockImageUrl,
             'previous_ingredients' => $ingredients,
-            'previous_cuisine' => $cuisine
+            'previous_cuisine' => $cuisine,
+            'previous_diet' => $diet,
         ]);
     }
 

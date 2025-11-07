@@ -48,8 +48,15 @@
                     </div>
 
                     <div class="mb-6">
-                        <label for="cuisine" class="block text-lg font-semibold mb-2 text-gray-800">Cuisine Type (Optional)</label>
-                        <select name="cuisine" id="cuisine" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <label for="cuisine-select" class="block text-lg font-semibold mb-2 text-gray-800">Cuisine Type (Optional)</label>
+
+                        @php
+                            // This is the logic block that was missing
+                            $standardCuisines = ['any', 'Italian', 'Asian', 'Mexican', 'Mediterranean', 'Healthy', 'Dessert'];
+                            $isOtherCuisine = isset($previous_cuisine) && !in_array($previous_cuisine, $standardCuisines);
+                        @endphp
+
+                        <select name="cuisine_select" id="cuisine-select" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                             <option value="any" {{ ($previous_cuisine ?? 'any') == 'any' ? 'selected' : '' }}>Any</option>
                             <option value="Italian" {{ ($previous_cuisine ?? '') == 'Italian' ? 'selected' : '' }}>Italian</option>
                             <option value="Asian" {{ ($previous_cuisine ?? '') == 'Asian' ? 'selected' : '' }}>Asian</option>
@@ -57,7 +64,39 @@
                             <option value="Mediterranean" {{ ($previous_cuisine ?? '') == 'Mediterranean' ? 'selected' : '' }}>Mediterranean</option>
                             <option value="Healthy" {{ ($previous_cuisine ?? '') == 'Healthy' ? 'selected' : '' }}>Healthy</option>
                             <option value="Dessert" {{ ($previous_cuisine ?? '') == 'Dessert' ? 'selected' : '' }}>Dessert</option>
+                            <!-- This line is now fixed -->
+                            <option value="other" {{ $isOtherCuisine ? 'selected' : '' }}>Other...</option>
                         </select>
+
+                        <!-- These attributes are now fixed -->
+                        <input type="text" name="cuisine_other" id="cuisine-other-input"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 mt-2 {{ !$isOtherCuisine ? 'hidden' : '' }}"
+                            placeholder="e.g., Spicy Thai, Kid-Friendly, French"
+                            value="{{ $isOtherCuisine ? ($previous_cuisine ?? '') : '' }}">
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="diet-select" class="block text-lg font-semibold mb-2 text-gray-800">Dietary Goal (Optional)</label>
+
+                        @php
+                            $standardDiets = ['none', 'Low Calorie', 'High Protein', 'Vegetarian', 'Gluten-Free', 'Quick Meal'];
+                            $isOtherDiet = isset($previous_diet) && !in_array($previous_diet, $standardDiets);
+                        @endphp
+
+                        <select name="diet_select" id="diet-select" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="none" {{ ($previous_diet ?? 'none') == 'none' ? 'selected' : '' }}>None</option>
+                            <option value="Low Calorie" {{ ($previous_diet ?? '') == 'Low Calorie' ? 'selected' : '' }}>Low Calorie</option>
+                            <option value="High Protein" {{ ($previous_diet ?? '') == 'High Protein' ? 'selected' : '' }}>High Protein</option>
+                            <option value="Vegetarian" {{ ($previous_diet ?? '') == 'Vegetarian' ? 'selected' : '' }}>Vegetarian</option>
+                            <option value="Gluten-Free" {{ ($previous_diet ?? '') == 'Gluten-Free' ? 'selected' : '' }}>Gluten-Free</option>
+                            <option value="Quick Meal" {{ ($previous_diet ?? '') == 'Quick Meal' ? 'selected' : '' }}>Quick Meal (under 20 mins)</option>
+                            <option value="other" {{ $isOtherDiet ? 'selected' : '' }}>Other...</option>
+                        </select>
+
+                        <input type="text" name="diet_other" id="diet-other-input"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 mt-2 {{ !$isOtherDiet ? 'hidden' : '' }}"
+                            placeholder="e.g., Low Carb, Vegan, No Nuts"
+                            value="{{ $isOtherDiet ? ($previous_diet ?? '') : '' }}">
                     </div>
 
                     <button type="submit" id="generate-button"
@@ -84,6 +123,15 @@
                         <div class="absolute inset-0 bg-gradient-to-tr from-green-100 via-white to-transparent pointer-events-none rounded-3xl"></div>
 
                         <div class="flex justify-end mb-6 relative z-10" data-html2canvas-ignore>
+                            <!-- "SHARE" BUTTON HERE -->
+                            <button id="share-button" class="flex items-center gap-2 bg-purple-100 text-purple-800 font-semibold py-2 px-4 rounded-lg shadow-sm border border-purple-300 hover:bg-purple-200 active:scale-95 transition-all duration-200 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.368a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                                </svg>
+                                <span id="share-text">Share</span>
+                            </button>
+
+                            <!-- "COPY" BUTTON HERE -->
                             <button id="copy-button"
                                 class="flex items-center gap-2 bg-green-100/80 text-green-800 font-semibold py-2 px-4 rounded-lg shadow-sm border border-green-300 hover:bg-green-200 hover:shadow-md active:scale-95 transition-all duration-200 text-sm backdrop-blur-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
@@ -94,6 +142,7 @@
                                 <span id="copy-text">Copy</span>
                             </button>
 
+                            <!-- "DOWNLOAD" BUTTON HERE -->
                             <form action="{{ route('recipe.download') }}" method="POST" class="ml-2">
                                 @csrf
                                 <!-- use hidden inputs to pass the recipe data to the download controller -->
@@ -126,9 +175,21 @@
 
                         <div class="relative">
                             <h2 class="text-4xl font-extrabold text-gray-900 mb-3 text-center">{{ $recipe['recipeName'] }}</h2>
+
+                            @if (isset($previous_diet) && $previous_diet !== 'none')
+                                <div class="text-center mb-6">
+                                    <span class="inline-block bg-cyan-100 text-cyan-800 text-sm font-semibold px-3 py-1 rounded-full border border-cyan-200">
+                                        Goal: {{ $previous_diet }}
+                                    </span>
+                                </div>
+                            @endif
+
                             <p class="text-gray-600 text-center mb-8 max-w-2xl mx-auto leading-relaxed">
                                 {{ $recipe['description'] }}
                             </p>
+                            <div class="relative bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-r-lg mb-8 max-w-2xl mx-auto text-sm">
+                                <p><strong>Please Note:</strong> SmartChef AI is a creative assistant. While it tries its best to follow cuisine and dietary requests, the results are AI-generated and may be creative interpretations. Always use your best judgment when cooking.</p>
+                            </div>
                         </div>
 
                         <div class="relative grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl mb-10 border border-green-200 shadow-inner">
@@ -178,7 +239,15 @@
                             <form action="{{ route('recipe.generate') }}" method="POST" id="regenerate-form" class="inline-block">
                                 @csrf
                                 <input type="hidden" name="ingredients" value="{{ $previous_ingredients ?? '' }}">
-                                <input type="hidden" name="cuisine" value="{{ $previous_cuisine ?? 'any' }}">
+
+                                @php
+                                    $standardCuisines = ['any', 'Italian', 'Asian', 'Mexican', 'Mediterranean', 'Healthy', 'Dessert'];
+                                    $isOtherCuisine = !in_array($previous_cuisine ?? 'any', $standardCuisines);
+                                @endphp
+                                <input type="hidden" name="cuisine_select" value="{{ $isOtherCuisine ? 'other' : ($previous_cuisine ?? 'any') }}">
+                                <input type="hidden" name="cuisine_other" value="{{ $isOtherCuisine ? ($previous_cuisine ?? '') : '' }}">
+                                <input type="hidden" name="diet_select" value="{{ $isOtherDiet ? 'other' : ($previous_diet ?? 'none') }}">
+                                <input type="hidden" name="diet_other" value="{{ $isOtherDiet ? ($previous_diet ?? '') : '' }}">
 
                                 <button type="submit" id="regenerate-button"
                                     class="bg-green-100 text-green-800 font-semibold py-2 px-5 rounded-lg border border-green-200 hover:bg-green-200 hover:border-green-300 transition-all duration-300 flex items-center justify-center mx-auto disabled:opacity-60 relative overflow-hidden">
@@ -313,6 +382,37 @@ Generated by SmartChef AI
                 });
             }
 
+            //CUISINE HYBRID DROPDOWN
+            const cuisineSelect = document.getElementById('cuisine-select');
+            const cuisineOtherInput = document.getElementById('cuisine-other-input');
+
+            if (cuisineSelect) {
+                cuisineSelect.addEventListener('change', function() {
+                    // If the selected value is "other"
+                    if (this.value === 'other') {
+                        // Show the text input
+                        cuisineOtherInput.classList.remove('hidden');
+                    } else {
+                        // Otherwise, make sure the text input is hidden
+                        cuisineOtherInput.classList.add('hidden');
+                    }
+                });
+            }
+
+            // HYBRID DIET DROPDOWN
+            const dietSelect = document.getElementById('diet-select');
+            const dietOtherInput = document.getElementById('diet-other-input');
+
+            if (dietSelect) {
+                dietSelect.addEventListener('change', function() {
+                    if (this.value === 'other') {
+                        dietOtherInput.classList.remove('hidden');
+                    } else {
+                        dietOtherInput.classList.add('hidden');
+                    }
+                });
+            }
+
             // --- SCRIPT FOR THE "SAVE AS IMAGE" BUTTON ---
             const saveImageButton = document.getElementById('save-image-button');
 
@@ -372,6 +472,52 @@ Generated by SmartChef AI
                 setTimeout(() => {
                     recipeCard.classList.remove('opacity-0');
                 }, 300); // 300ms delay
+            }
+
+
+            // --- SCRIPT FOR THE SHARE BUTTON ---
+            const shareButton = document.getElementById('share-button');
+
+            if (shareButton) {
+                shareButton.addEventListener('click', async () => {
+                    const recipeCard = document.getElementById('recipe-card');
+                    const recipeName = recipeCard.querySelector('h2').innerText;
+                    const shareText = document.getElementById('share-text');
+                    const originalText = shareText.textContent;
+
+                    const shareData = {
+                        title: recipeName,
+                        text: `Check out this recipe for "${recipeName}" I just made with SmartChef AI!`,
+                        url: window.location.href // This shares the current page URL
+                    };
+
+                    // Check if the browser supports the Web Share API
+                    if (navigator.share) {
+                        try {
+                            await navigator.share(shareData);
+                            // The share dialog was successful
+                            shareText.textContent = 'Shared!';
+                        } catch (err) {
+                            // The user cancelled the share dialog
+                            console.log('Share was cancelled.');
+                            shareText.textContent = 'Cancelled';
+                        }
+                    } else {
+                        // Fallback for desktop browsers: Copy the URL to the clipboard
+                        try {
+                            await navigator.clipboard.writeText(window.location.href);
+                            shareText.textContent = 'Link Copied!';
+                        } catch (err) {
+                            console.error('Failed to copy URL: ', err);
+                            shareText.textContent = 'Error!';
+                        }
+                    }
+
+                    // Revert the button text after 2 seconds
+                    setTimeout(() => {
+                        shareText.textContent = originalText;
+                    }, 2000);
+                });
             }
         });
 
