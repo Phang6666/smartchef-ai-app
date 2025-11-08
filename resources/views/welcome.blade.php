@@ -216,6 +216,7 @@
                         @if (isset($nutrition) && is_array($nutrition))
                             <div class="relative mt-8">
                                 <h3 class="text-2xl font-bold text-green-700 mb-6 text-center">Predicted Nutrition Breakdown</h3>
+                                <p class="text-xs text-center text-gray-500 mb-4">(Note: This is a basic prediction and does not account for ingredient quantities. It is for estimation purposes only.)</p>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 p-6 rounded-2xl border shadow-inner">
 
                                     <!-- Left Side: Pie Chart for Macros -->
