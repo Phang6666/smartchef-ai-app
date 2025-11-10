@@ -1,64 +1,132 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# 🍲 SmartChef AI - AI-Powered Recipe Generator
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**SmartChef AI** is a full-stack web application that transforms user-provided ingredients into creative, delicious recipes using a multi-system AI platform. It features an intelligent backend, a polished user interface, and a custom-built machine learning model for nutritional analysis.
 
-## About Laravel
+<!-- Optional: Add a link to the live demo once it's deployed -->
+**[ ➡️ View Live Demo (Coming Soon!) ]**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🏛️ System Architecture
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+This project is built using a **multi-service architecture**, demonstrating the integration of several independent systems:
 
-## Learning Laravel
+1.  **Main Web Application (This Repository):** A Laravel/PHP application that handles all user interaction, manages the frontend, and acts as the orchestrator for the various AI services.
+2.  **Nutrition Prediction Service:** A separate Python/Flask microservice that hosts a custom-trained machine learning model to provide on-demand nutritional analysis.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+The data flow is as follows:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+[User] -> [SmartChef AI (Laravel App)]
+              |
+              +---> [Google Gemini API] (for creative recipe generation)
+              |
+              +---> [Pixabay API] (for intelligent image searching)
+              |
+              +---> [Nutrition ML Service (Python)] (for analytical predictions)
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### ✨ Key Features
 
-### Premium Partners
+- **AI-Powered Recipe Generation:** Leverages the Google Gemini API to generate creative recipes, including descriptions, ingredients, and instructions, all in a structured JSON format.
+- **Intelligent Image Search:** A sophisticated, multi-tiered search algorithm that finds the most relevant recipe photo from the Pixabay API, with multiple smart fallbacks and a default image to ensure a great UI.
+- **ML-Based Nutrition Prediction:** Integrates with a **separate Python/Flask microservice** that uses a trained Random Forest model to predict nutritional information (calories, protein, fat, carbs) for each recipe.
+- **Advanced Personalization:** Users can guide the AI by selecting from predefined cuisine and dietary goals, or by providing their own custom, free-text inputs.
+- **Professional User Experience:**
+    - A beautiful, modern, and fully responsive UI with custom CSS and animations.
+    - A full suite of actions: Regenerate Recipe, Copy to Clipboard, Download as PDF, and Save as Image.
+    - Robust error handling and user-friendly validation to handle unexpected inputs and API failures gracefully.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+---
 
-## Contributing
+### 📸 Screenshots
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+<!-- Take a great screenshot of your final application and place it here! -->
+<!-- To do this: 1. Create a `screenshots` folder in your project. 2. Save your image as `app-screenshot.png` inside it. 3. Uncomment the line below. -->
+<!-- ![SmartChef AI Screenshot](screenshots/app-screenshot.png) -->
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 🛠️ Tech Stack
 
-## Security Vulnerabilities
+- **Backend:** PHP, Laravel
+- **Frontend:** HTML, Custom CSS, JavaScript, Chart.js, dom-to-image
+- **AI & APIs:**
+    - **Recipe Generation:** Google Gemini API
+    - **Image Search:** Pixabay API
+- **Machine Learning Service:**
+    - **Language/Framework:** Python, Flask
+    - **Libraries:** scikit-learn, Pandas, joblib
+- **Database (for future features):** MySQL (configured)
+- **Development Server:** `php artisan serve`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+### ⚙️ How to Run Locally
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This is a multi-service application. You must have **both** the ML service and the Laravel app running at the same time for all features to work.
+
+**Part 1: Set Up the ML Prediction Service**
+
+1.  Clone and set up the ML service repository first.
+    ```bash
+    # In a new terminal...
+    git clone https://github.com/YOUR_USERNAME/smartchef-ai-ml-service.git
+    cd smartchef-ai-ml-service
+    ```
+2.  Follow the setup instructions in that repository's `README.md` file (create venv, install requirements).
+3.  Start the Python server. It must be running for the main app to work.
+    ```bash
+    python app.py
+    ```
+    The ML service will now be running on `http://127.0.0.1:5001`.
+
+**Part 2: Set Up the Main Laravel App (This Repository)**
+
+1.  Clone this repository in a **separate location**.
+    ```bash
+    # In a new, separate terminal...
+    git clone https://github.com/YOUR_USERNAME/smartchef-ai-app.git
+    cd smartchef-ai-app
+    ```
+2.  Install all dependencies.
+    ```bash
+    # Install PHP dependencies
+    composer install
+
+    # Install JS dependencies
+    npm install
+    ```
+3.  Configure your environment.
+    ```bash
+    # Copy the environment file
+    cp .env.example .env
+
+    # Generate an application key
+    php artisan key:generate
+    ```
+4.  Add your API keys to the `.env` file. You will need:
+    - `GEMINI_API_KEY`
+    - `PIXABAY_API_KEY`
+
+5.  Run the frontend asset compiler.
+    ```bash
+    # This will watch for changes
+    npm run dev
+    ```
+6.  In a **third terminal**, run the Laravel development server.
+    ```bash
+    php artisan serve
+    ```
+Your main application is now running on `http://127.0.0.1:8000`. You can now open this URL in your browser.
+
+---
+
+### 🎓 What I Learned
+
+This project was a deep dive into building a full-stack, multi-system AI application. Key learnings include:
+- Architecting a system with multiple, independent API services (Laravel and Python/Flask).
+- The entire machine learning pipeline, from raw data preprocessing with Pandas to training a Random Forest model and serving it via a Flask API.
+- Advanced prompt engineering to ensure reliable, structured JSON output from a creative AI.
+- The importance of robust, multi-tiered fallback logic when integrating different APIs (as seen in the image search algorithm).
+- The critical role of environment configuration (local server issues vs. `php artisan serve`) and dependency management in both PHP and Python ecosystems.
