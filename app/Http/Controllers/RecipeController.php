@@ -26,7 +26,7 @@ class RecipeController extends Controller
     {
         // 1. Validate all user inputs
         $request->validate([
-            'ingredients' => 'required|string|min:5',
+            'ingredients' => 'required|string|min:3',
             'cuisine_select' => 'nullable|string',
             'cuisine_other' => 'nullable|string',
             'diet_select' => 'nullable|string',
@@ -60,7 +60,9 @@ class RecipeController extends Controller
         // 3. Build the prompt for the AI
         $prompt = "You are a recipe API. Your job is to return a recipe in a valid JSON format.
         Do not include any introductory text, just the JSON object.
-        The recipe should use the following ingredients: {$ingredients}.";
+        The recipe should use the following ingredients: {$ingredients}.
+
+        **Important Rule: If any of the provided ingredients seem nonsensical, made-up, or are not recognizable food items, simply ignore them and create the best possible recipe using only the valid ingredients.**";
 
         // Conditionally add the cuisine style to the prompt
         if ($cuisine !== 'any') {
@@ -399,9 +401,11 @@ class RecipeController extends Controller
     {
         // Get the raw JSON string from the input
         $recipeJson = $request->input('recipe');
+         $nutritionJson = $request->input('nutrition');
         $imageUrl = $request->input('imageUrl');
 
         $recipeData = json_decode($recipeJson, true);
+        $nutritionData = json_decode($nutritionJson, true);
 
         if (empty($recipeData) || !is_array($recipeData)) {
             // This error will now only happen if something is truly wrong
@@ -411,7 +415,8 @@ class RecipeController extends Controller
         // Load the PDF view with the (now correctly formatted) data
         $pdf = PDF::loadView('recipe-pdf', [
             'recipe' => $recipeData,
-            'imageUrl' => $imageUrl
+            'imageUrl' => $imageUrl,
+            'nutrition' => $nutritionData
         ]);
 
         // Create a clean filename for the download

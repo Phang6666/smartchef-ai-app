@@ -5,18 +5,19 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{{ $recipe['recipeName'] }}</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; color: #333; }
+        body { font-family: DejaVu Sans, sans-serif; color: #333; line-height: 1.6; }
         .container { padding: 20px; }
-        .recipe-image { width: 100%; height: 250px; object-fit: cover; margin-bottom: 20px; border-radius: 8px; }
-        h1 { font-size: 28px; text-align: center; margin-bottom: 10px; color: #16a34a; }
+        .recipe-image { width: 100%; max-height: 300px; object-fit: cover; margin-bottom: 20px; border-radius: 8px; }
+        h1 { font-size: 28px; text-align: center; margin-bottom: 10px; color: #15803d; }
         .description { text-align: center; font-style: italic; color: #555; margin-bottom: 25px; }
-        .details-grid { border: 1px solid #ddd; padding: 15px; margin-bottom: 25px; border-radius: 8px; }
-        .details-grid table { width: 100%; }
-        .details-grid td { text-align: center; padding: 5px; }
-        .section-title { font-size: 22px; color: #16a34a; border-bottom: 2px solid #16a34a; padding-bottom: 5px; margin-top: 30px; margin-bottom: 15px; }
+        .details-grid { border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 25px; border-radius: 8px; }
+        .details-grid table { width: 100%; border-collapse: collapse; }
+        .details-grid td { text-align: center; padding: 8px; font-size: 14px; }
+        .section-title { font-size: 22px; color: #15803d; border-bottom: 2px solid #15803d; padding-bottom: 5px; margin-top: 30px; margin-bottom: 15px; }
         ul, ol { padding-left: 20px; }
-        li { margin-bottom: 8px; line-height: 1.5; }
+        li { margin-bottom: 10px; }
         .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #888; }
+        .disclaimer { font-size: 11px; text-align: center; margin-top: -20px; margin-bottom: 20px; color: #555; }
     </style>
 </head>
 <body>
@@ -32,13 +33,30 @@
             <table>
                 <tr>
                     <td><strong>Time:</strong> {{ $recipe['cookingTime'] }}</td>
-                    <td><strong>Calories:</strong> {{ $recipe['calories'] }}</td>
                     <td><strong>Difficulty:</strong> {{ $recipe['difficulty'] }}</td>
                     <td><strong>Cuisine:</strong> {{ $recipe['cuisine'] }}</td>
                     <td><strong>Servings:</strong> {{ $recipe['servings'] }}</td>
                 </tr>
             </table>
         </div>
+
+        <!-- NEW NUTRITION SECTION -->
+        @if (isset($nutrition) && is_array($nutrition))
+            <h2 class="section-title">Predicted Nutrition (for Full Recipe)</h2>
+            <div class="details-grid">
+                <table>
+                    <tr>
+                        <td><strong>Calories:</strong> {{ round($nutrition['calories']) }} kcal</td>
+                        <td><strong>Protein:</strong> {{ round($nutrition['protein']) }}g</td>
+                        <td><strong>Fat:</strong> {{ round($nutrition['fat']) }}g</td>
+                        <td><strong>Carbs:</strong> {{ round($nutrition['carbs']) }}g</td>
+                    </tr>
+                </table>
+            </div>
+            <p class="disclaimer">
+                (Note: This is a basic prediction and does not account for ingredient quantities.)
+            </p>
+        @endif
 
         <h2 class="section-title">Ingredients</h2>
         <ul>
